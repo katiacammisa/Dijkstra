@@ -3,19 +3,16 @@ import java.util.LinkedList;
 
 public class ProducerConsumer {
   public static void main(String[] args)
-          throws InterruptedException
-  {
+          throws InterruptedException {
     final SharedArea shared = new SharedArea(10);
 
     // Create producer thread
     Thread prod_thread = new Thread(new Runnable() {
       @Override
-      public void run()
-      {
+      public void run() {
         try {
           shared.produce();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
           e.printStackTrace();
         }
       }
@@ -24,12 +21,10 @@ public class ProducerConsumer {
     // Create consumer thread
     Thread cons_thread = new Thread(new Runnable() {
       @Override
-      public void run()
-      {
+      public void run() {
         try {
           shared.consume();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
           e.printStackTrace();
         }
       }
@@ -44,96 +39,44 @@ public class ProducerConsumer {
 
   public static class SharedArea {
 
-    final int SIZE;
-    private LinkedList<Integer> buffer = new LinkedList<>();;
-    private int mutex = 1;
-    private int empty;
-    private int full = 0;
+    private final int SIZE;
+    private LinkedList<Integer> buffer = new LinkedList<>();
+    private Semaphore mutex;
+    private Semaphore empty;
+    private Semaphore full;
 
     public SharedArea(int size) {
       SIZE = size;
-      this.empty = size;
+      this.mutex = new Semaphore(1);
+      this.empty = new Semaphore(size);
+      this.full = new Semaphore(0);
     }
 
-    public void produce() throws InterruptedException
-    {
+    public void produce() throws InterruptedException {
       int element = 0;
       while (true) {
         int delay = ThreadLocalRandom.current().nextInt(0, 1500 + 1);
         Thread.sleep(delay);
-        downEmpty();
-        downMutex();
+        empty.down();
+        mutex.down();
         System.out.println("Produce " + element);
         buffer.add(element++);
-        upMutex();
-        upFull();
+        mutex.up();
+        full.up();
       }
     }
 
-    public void consume() throws InterruptedException
-    {
+    public void consume() throws InterruptedException {
       int element;
       while (true) {
         Thread.sleep(1000);
-        downFull();
-        downMutex();
+        full.down();
+        mutex.down();
         element = buffer.removeFirst();
         System.out.println("            Consume " + element);
-        upMutex();
-        upEmpty();
+        mutex.up();
+        empty.up();
       }
     }
-
-    private void downEmpty() throws InterruptedException {
-      // System.out.println("downEmpty:" + this.empty);
-      synchronized(this) {
-        while (this.empty <= 0)
-          wait();
-        this.empty--;
-      }
-    }
-
-    private void upEmpty() {
-      // System.out.println("upEmpty:" + this.empty);
-      synchronized(this) {
-        this.empty++;
-        notify();
-      }
-    }
-
-    private void downMutex() throws InterruptedException {
-      // System.out.println("downMutex:" + this.mutex);
-      synchronized(this) {
-        while (this.mutex <= 0)
-          wait();
-        this.mutex--;
-      }
-    }
-
-    private void upMutex() {
-      // System.out.println("upMutex:" + this.mutex);
-      synchronized(this) {
-        this.mutex++;
-        notify();
-      }
-    }
-
-    private void downFull() throws InterruptedException {
-      // System.out.println("downFull:" + this.full);
-      synchronized(this) {
-        while (this.full <= 0)
-          wait();
-        this.full--;
-      }
-    }
-
-    private void upFull() {
-      // System.out.println("upFull:" + this.full);
-      synchronized(this) {
-        this.full++;
-        notify();
-      }
-    }
-
   }
 }
