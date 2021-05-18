@@ -17,7 +17,7 @@ public class ProducerConsumer {
     System.out.println("Ingrese cantidad de consumers");
     int amountOfConsumers = scanner.nextInt();
 
-    final SharedArea shared = new SharedArea(size);
+    final SharedArea shared = new SharedAreaMonitor(size);
     final List<Producer> producers = new ArrayList<>();
     final List<Consumer> consumers = new ArrayList<>();
 
