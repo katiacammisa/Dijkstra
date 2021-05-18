@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 public class Producer implements ThreadRunnable {
 
   // Create producer thread
@@ -23,7 +25,7 @@ public class Producer implements ThreadRunnable {
   public void run() {
     try {
       shared.produce();
-    } catch (InterruptedException e) {
+    } catch (InterruptedException | IOException e) {
       e.printStackTrace();
     }
   }

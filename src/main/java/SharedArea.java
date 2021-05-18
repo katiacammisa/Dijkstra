@@ -1,5 +1,7 @@
-public interface SharedArea {
-  void produce() throws InterruptedException;
+import java.io.IOException;
 
-  void consume() throws InterruptedException;
+public interface SharedArea {
+  void produce() throws InterruptedException, IOException;
+
+  void consume() throws InterruptedException, IOException;
 }

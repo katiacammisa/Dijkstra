@@ -1,10 +1,11 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class ProducerConsumer {
   public static void main(String[] args)
-          throws InterruptedException {
+          throws InterruptedException, IOException {
 
     Scanner scanner = new Scanner(System.in);
 
@@ -17,7 +18,7 @@ public class ProducerConsumer {
     System.out.println("Ingrese cantidad de consumers");
     int amountOfConsumers = scanner.nextInt();
 
-    final SharedArea shared = new SharedAreaMonitor(size);
+    final SharedArea shared = new SharedAreaMessages(size);
     final List<Producer> producers = new ArrayList<>();
     final List<Consumer> consumers = new ArrayList<>();
 

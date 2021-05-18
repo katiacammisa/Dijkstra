@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 public class Consumer implements ThreadRunnable {
 
   // Create consumer thread
@@ -23,7 +25,7 @@ public class Consumer implements ThreadRunnable {
   public void run() {
     try {
       shared.consume();
-    } catch (InterruptedException e) {
+    } catch (InterruptedException | IOException e) {
       e.printStackTrace();
     }
   }

@@ -22,8 +22,8 @@ public class SharedAreaMonitor implements SharedArea {
       }
       System.out.println("Produce " + prodElement);
       buffer.add(prodElement++);
-      notify();
-      wait();
+      if (buffer.size() == 1)
+        notify();
     }
   }
 
@@ -35,9 +35,9 @@ public class SharedAreaMonitor implements SharedArea {
         wait();
       }
       consElement = buffer.removeFirst();
-      notify();
+      if (buffer.size() == SIZE - 1)
+        notify();
       System.out.println("Consume " + consElement);
-      wait();
     }
   }
 }
