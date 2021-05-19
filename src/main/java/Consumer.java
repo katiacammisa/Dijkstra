@@ -24,7 +24,10 @@ public class Consumer implements ThreadRunnable {
   @Override
   public void run() {
     try {
-      shared.consume();
+      while (true) {
+        Thread.sleep(1000);
+        shared.consume();
+      }
     } catch (InterruptedException | IOException e) {
       e.printStackTrace();
     }

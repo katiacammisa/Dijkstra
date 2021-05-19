@@ -13,32 +13,25 @@ public class SharedAreaMonitor implements SharedArea {
   }
 
   public synchronized void produce() throws InterruptedException {
-    while (true) {
-      int delay = ThreadLocalRandom.current().nextInt(0, 1500 + 1);
-      Thread.sleep(delay);
-      while (buffer.size() >= SIZE) {
-        System.out.println("Producer waiting, buffer: " + buffer.size());
-        wait();
-      }
-      System.out.println("Produce " + prodElement);
-      buffer.add(prodElement++);
-      if (buffer.size() == 1)
-        notify();
+    while (buffer.size() >= SIZE) {
+      System.out.println("Producer waiting, buffer: " + buffer.size());
+      wait();
     }
+    System.out.println("Produce " + prodElement);
+    buffer.add(prodElement++);
+    if (buffer.size() == 1)
+      notify();
   }
 
   public synchronized void consume() throws InterruptedException {
-    while (true) {
-      Thread.sleep(1000);
-      while (buffer.size() <= 0) {
-        System.out.println("Consumer waiting, buffer: " + buffer.size());
-        wait();
-      }
-      consElement = buffer.removeFirst();
-      if (buffer.size() == SIZE - 1)
-        notify();
-      System.out.println("Consume " + consElement);
+    while (buffer.size() <= 0) {
+      System.out.println("Consumer waiting, buffer: " + buffer.size());
+      wait();
     }
+    consElement = buffer.removeFirst();
+    if (buffer.size() == SIZE - 1)
+      notify();
+    System.out.println("Consume " + consElement);
   }
 }
 // TODO Usar public synchronized void y tambien wait()

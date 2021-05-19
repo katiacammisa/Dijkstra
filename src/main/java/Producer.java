@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Producer implements ThreadRunnable {
 
@@ -24,7 +25,11 @@ public class Producer implements ThreadRunnable {
   @Override
   public void run() {
     try {
-      shared.produce();
+      while (true) {
+        int delay = ThreadLocalRandom.current().nextInt(0, 1500 + 1);
+        Thread.sleep(delay);
+        shared.produce();
+      }
     } catch (InterruptedException | IOException e) {
       e.printStackTrace();
     }
