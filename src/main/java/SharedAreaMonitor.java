@@ -1,5 +1,4 @@
 import java.util.LinkedList;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class SharedAreaMonitor implements SharedArea {
 
