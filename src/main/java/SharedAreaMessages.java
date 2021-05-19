@@ -1,47 +1,45 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class SharedAreaMessages implements SharedArea {
 
-  private final int SIZE;
-  private final ConcurrentLinkedDeque<Socket> queue = new ConcurrentLinkedDeque<>();
-  private final ServerSocket serverSocket = new ServerSocket(6666);
   private int prodElement = 0;
   private int consElement = 0;
+  private final ServerSocket serverSocket = new ServerSocket(6666);
+  private final Socket producerSocket;
+  private final Socket consumerSocket;
+  private final PrintStream producerOut, consumerOut;
+  private final BufferedReader producerIn, consumerIn;
 
-  public SharedAreaMessages(int SIZE) throws IOException {
-    this.SIZE = SIZE;
-    System.out.println("Created succesfully");
-  }
-
-  @Override
-  public void produce() throws InterruptedException, IOException {
-    System.out.println("produce method");
-    while (true) {
-      Socket clientSocket = serverSocket.accept();
-      queue.offer(clientSocket);
-      synchronized (queue) {
-        System.out.println("Produced");
-        queue.notify();
-      }
+  public SharedAreaMessages(int size) throws IOException {
+    consumerSocket = new Socket("localhost", 6666);
+    producerSocket = serverSocket.accept();
+    producerOut = new PrintStream(producerSocket.getOutputStream());
+    producerIn = new BufferedReader(new InputStreamReader(producerSocket.getInputStream()));
+    consumerOut = new PrintStream(consumerSocket.getOutputStream());
+    consumerIn = new BufferedReader(new InputStreamReader(consumerSocket.getInputStream()));
+    for (int i = 0; i < size; i++) {
+      consumerOut.println();
     }
   }
 
   @Override
-  public void consume() throws InterruptedException, IOException {
-    System.out.println("consume method");
-    Socket socket;
-    while (true) {
-      socket = queue.poll();
-      synchronized (queue) {
-        queue.wait();
-      }
-      if (socket != null) {
-        socket.close();
-        System.out.println("Consumed");
-      }
-    }
+  public void produce() throws IOException {
+    producerIn.readLine();
+    int message = ++prodElement;
+    System.out.println("El productor produce: " + message);
+    producerOut.println(message);
+    producerOut.flush();
+  }
+
+  @Override
+  public void consume() throws IOException {
+    String message = consumerIn.readLine();
+    consumerOut.println();
+    System.out.println("El consumidor consume: " + message);
   }
 }
