@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class ProducerConsumer {
+public class ProducerConsumerSemaphor {
   public static void main(String[] args)
           throws InterruptedException, IOException {
 
@@ -18,7 +18,7 @@ public class ProducerConsumer {
     System.out.println("Ingrese cantidad de consumers");
     int amountOfConsumers = scanner.nextInt();
 
-    final SharedArea shared = new SharedAreaMessages(size);
+    final SharedArea shared = new SharedAreaImpl(size);
     final List<Producer> producers = new ArrayList<>();
     final List<Consumer> consumers = new ArrayList<>();
 
